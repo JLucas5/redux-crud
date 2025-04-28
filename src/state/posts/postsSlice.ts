@@ -1,4 +1,4 @@
-import { createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
 
 interface Post {
     id?: string,
@@ -15,7 +15,7 @@ const initialState: PostsState = {
     posts: []
 }
 
-const postsSlice = {
+const postsSlice = createSlice({
     name: 'posts',
     initialState,
     reducers: {
@@ -23,33 +23,37 @@ const postsSlice = {
     extraReducers: (builder: any) => {
         builder
             .addCase(addPost.fulfilled, (state: PostsState, action: PayloadAction<PostsState>) => {
-                console.log("fulfilled")
+                console.log("addPost fulfilled")
                 state.posts = action.payload.posts
             })
             .addCase(deletePost.fulfilled, (state: PostsState, action: PayloadAction<PostsState>) => {
-                console.log("fulfilled")
+                console.log("deletePost fulfilled")
                 state.posts = action.payload.posts
             })
             .addCase(updatePost.fulfilled, (state: PostsState, action: PayloadAction<PostsState>) => {
-                console.log("fulfilled")
+                console.log("updatePost fulfilled")
+                state.posts = action.payload.posts
+            })
+            .addCase(pullFromServer.fulfilled, (state: PostsState, action: PayloadAction<PostsState>) => {
+                console.log("pullFromServer fulfilled")
                 state.posts = action.payload.posts
             })
     }
-}
+})
 
 //These following functions are only simulating a backend API call
 // and are instead working with LocalStorage
-
 export const addPost = createAsyncThunk(
     "posts/addPost",
     async (post: Post) => {
-        //fake API call
+        //Fake API call
         await new Promise((resolve) => setTimeout(resolve, 1000))
         
         const storedPosts = JSON.parse(localStorage.getItem("posts")||`{posts:[]}`) as PostsState
-        storedPosts.posts.push({ id: generateUniqueId(), ...post})
+        storedPosts.posts.push({ ...post, id: generateUniqueId()})
         
         localStorage.setItem("posts", JSON.stringify(storedPosts))
+        //End of fake API call
         return storedPosts
     }
 )   
@@ -57,14 +61,14 @@ export const addPost = createAsyncThunk(
 export const deletePost = createAsyncThunk(
     "posts/deletePost",
     async (id:string) => {
-        //fake API call
+        //Fake API call
         await new Promise((resolve) => setTimeout(resolve, 1000))
 
-        const storedPosts = JSON.parse(localStorage.getItem("posts")||'""') as PostsState
+        const storedPosts = JSON.parse(localStorage.getItem("posts")||`{posts:[]}`) as PostsState
         const filteredPosts = storedPosts.posts.filter((p: Post) => p.id !== id)
         
         localStorage.setItem("posts", JSON.stringify(filteredPosts))
-
+        //End of fake API call
         return filteredPosts
     }
 )   
@@ -72,21 +76,40 @@ export const deletePost = createAsyncThunk(
 export const updatePost = createAsyncThunk(
     "posts/updatePost",
     async (post: Post) => {
-        //fake API call
+        //Fake API call
         await new Promise((resolve) => setTimeout(resolve, 1000))
 
-        const storedPosts = JSON.parse(localStorage.getItem("posts")||'""') as PostsState
-        const updatedPosts = storedPosts.posts.map(datedPost => datedPost.id === post.id ? post : datedPost)
+        const storedPosts = JSON.parse(localStorage.getItem("posts")||`{posts:[]}`) as PostsState
+        const updatedPosts = storedPosts.posts.map(datedPost => datedPost.id === post.id ? {...datedPost,...post} : datedPost)
 
         localStorage.setItem("posts", JSON.stringify(updatedPosts))
+        //End of fake API call
         return updatedPosts
     }
 )
 
-export const { } = postsSlice.reducers
+export const pullFromServer = createAsyncThunk(
+    "posts/pullFromServer",
+    async () => {
+        //Fake API call
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+        const storedPosts = JSON.parse(localStorage.getItem("posts")||`{posts:[]}`) as PostsState
+        //End of fake API call
+        return storedPosts
+    }
+)
 
 
 
+export const { } = postsSlice.actions
+
+
+export default postsSlice.reducer
+
+
+
+// This function generates a unique ID based on the current timestamp and a random string
+//It will be replaced by a proper UUID generator library and properly imported. Eventually...
 function generateUniqueId(): string {
     const timestamp = Date.now().toString(36);
     const randomString = Math.random().toString(36).substring(2, 15);
