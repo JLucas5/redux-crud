@@ -50,6 +50,7 @@ export const addPost = createAsyncThunk(
         await new Promise((resolve) => setTimeout(resolve, 1000))
         
         const storedPosts = JSON.parse(localStorage.getItem("posts")||"{}") as PostsState
+        
         if(!storedPosts.posts){
             storedPosts.posts = []
         }
@@ -68,7 +69,12 @@ export const deletePost = createAsyncThunk(
         await new Promise((resolve) => setTimeout(resolve, 1000))
 
         const storedPosts = JSON.parse(localStorage.getItem("posts")||"''") as PostsState
-        const filteredPosts = storedPosts.posts.filter((p: Post) => p.id !== id)
+        if(!storedPosts.posts){
+            storedPosts.posts = []
+        }
+        //Filter out the post with the given id
+        const filteredPosts = {posts: []} as PostsState
+        filteredPosts.posts = storedPosts.posts.filter((p: Post) => p.id !== id)
         
         localStorage.setItem("posts", JSON.stringify(filteredPosts))
         //End of fake API call
@@ -83,8 +89,12 @@ export const updatePost = createAsyncThunk(
         await new Promise((resolve) => setTimeout(resolve, 1000))
 
         const storedPosts = JSON.parse(localStorage.getItem("posts")||"''") as PostsState
-        const updatedPosts = storedPosts.posts.map(datedPost => datedPost.id === post.id ? {...datedPost,...post} : datedPost)
-
+        if(!storedPosts.posts){
+            storedPosts.posts = []
+        }
+        //Find the post with the given id and update it
+        const updatedPosts = {posts: []} as PostsState
+        updatedPosts.posts = storedPosts.posts.map(datedPost => datedPost.id === post.id ? {...datedPost,...post} : datedPost)
         localStorage.setItem("posts", JSON.stringify(updatedPosts))
         //End of fake API call
         return updatedPosts
@@ -96,12 +106,15 @@ export const pullFromServer = createAsyncThunk(
     async () => {
         //Fake API call
         await new Promise((resolve) => setTimeout(resolve, 1000))
+        //Get the posts from local storage
         const storedPosts = JSON.parse(localStorage.getItem("posts")||`{posts:[]}`) as PostsState
+        if(!storedPosts.posts){
+            storedPosts.posts = []
+        }
         //End of fake API call
         return storedPosts
     }
 )
-
 
 
 export const { } = postsSlice.actions
