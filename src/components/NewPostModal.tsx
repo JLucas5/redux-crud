@@ -1,6 +1,6 @@
 import {useRef, useEffect, useState} from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../state/store';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../state/store';
 import { Post } from '../state/posts/postsSlice';
 import { addPost } from '../state/posts/postsSlice';
 
@@ -27,15 +27,16 @@ const NewPostModal = ({show,user, onClose}:NewPostModalProps) => {
         }
     }, [show, user]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setPost({...post, [name]: value})
     }
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        await dispatch(addPost(post))
+        dispatch(addPost(post))
         onClose()
+        setPost({username:'', title:'', content:'', id:''})
     }
 
 
