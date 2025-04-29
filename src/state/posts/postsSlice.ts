@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
 
-interface Post {
+export interface Post {
     id?: string,
     username: string,
     title: string,
@@ -49,7 +49,10 @@ export const addPost = createAsyncThunk(
         //Fake API call
         await new Promise((resolve) => setTimeout(resolve, 1000))
         
-        const storedPosts = JSON.parse(localStorage.getItem("posts")||`{posts:[]}`) as PostsState
+        const storedPosts = JSON.parse(localStorage.getItem("posts")||"{}") as PostsState
+        if(!storedPosts.posts){
+            storedPosts.posts = []
+        }
         storedPosts.posts.push({ ...post, id: generateUniqueId()})
         
         localStorage.setItem("posts", JSON.stringify(storedPosts))
@@ -64,7 +67,7 @@ export const deletePost = createAsyncThunk(
         //Fake API call
         await new Promise((resolve) => setTimeout(resolve, 1000))
 
-        const storedPosts = JSON.parse(localStorage.getItem("posts")||`{posts:[]}`) as PostsState
+        const storedPosts = JSON.parse(localStorage.getItem("posts")||"''") as PostsState
         const filteredPosts = storedPosts.posts.filter((p: Post) => p.id !== id)
         
         localStorage.setItem("posts", JSON.stringify(filteredPosts))
@@ -79,7 +82,7 @@ export const updatePost = createAsyncThunk(
         //Fake API call
         await new Promise((resolve) => setTimeout(resolve, 1000))
 
-        const storedPosts = JSON.parse(localStorage.getItem("posts")||`{posts:[]}`) as PostsState
+        const storedPosts = JSON.parse(localStorage.getItem("posts")||"''") as PostsState
         const updatedPosts = storedPosts.posts.map(datedPost => datedPost.id === post.id ? {...datedPost,...post} : datedPost)
 
         localStorage.setItem("posts", JSON.stringify(updatedPosts))
