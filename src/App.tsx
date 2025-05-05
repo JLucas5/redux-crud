@@ -10,7 +10,7 @@ const App = () => {
     <div className='container'> { username ? 
       <Posts/> :
       <Login/> }
-  </div>
+    </div>
   )
 }
 

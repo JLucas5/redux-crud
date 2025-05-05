@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
+import "./Login.css"
 
 const Login = () => {
 
@@ -10,12 +11,21 @@ const Login = () => {
         setInputValue(e.target.value)
     }
     return (
-        <div>Login
-            <input 
-                type="text"
-                value={inputValue}
-                onChange={handleInputChange}/>
-            <button onClick={() => dispatch({ type: 'user/login', payload: inputValue })}>Log in</button>
+        <div className="page-container">
+            <div className="login-container">
+                <h1>Please insert your name</h1>
+                <input 
+                    className='login-input'
+                    type="text"
+                    value={inputValue}
+                    onChange={handleInputChange}/>
+                <button 
+                    className={`login-button ${!inputValue ? 'disabled' : ''}`} 
+                    disabled={!inputValue} 
+                    onClick={() => dispatch({ type: 'user/login', payload: inputValue })}>
+                Log in
+                </button>
+            </div>
         </div>
     )
 }
