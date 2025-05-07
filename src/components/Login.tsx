@@ -1,8 +1,13 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from "react-router";
 import "./Login.css"
+import { RootState } from '../state/store'
 
 const Login = () => {
+
+    const username = useSelector((state: RootState) => state.user.name)
+    let navigate = useNavigate()
 
     const dispatch = useDispatch()
     const [inputValue, setInputValue] = useState<string>('')
@@ -10,6 +15,14 @@ const Login = () => {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(e.target.value)
     }
+
+    useEffect( () => {
+        if (username){
+            navigate('/posts')
+        }
+    },[username])
+
+
     return (
         <div className="page-container">
             <div className="login-container">
