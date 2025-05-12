@@ -6,10 +6,8 @@ import NewPostModal from './NewPostModal'
 import UpdatePostModal from './UpdatePostModal'
 import "./Posts.css"
 import { logout } from '../state/user/userSlice'
-import { useNavigate } from 'react-router-dom'
 
 const Posts = () => {
-    const navigate = useNavigate()
     const posts = useSelector((state: RootState) => state.posts.posts)
     const username = useSelector((state: RootState) => state.user.name)
     const dispatch = useDispatch<AppDispatch>()
@@ -19,11 +17,8 @@ const Posts = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false)
 
     useEffect(() => {
-        if(!username){
-            navigate('/login')
-        }
         dispatch(pullFromServer())
-    },[username])
+    },[])
 
     const handleNewPost = () => {
         setShowNewModal(true)
@@ -50,7 +45,7 @@ const Posts = () => {
                 {posts.map((post, index)=>(
                     <div key={index} className="post" >
                         <p className='post-title'>{post.title}</p>  
-                        <p className='post-user'>{post.username}</p>
+                        <p className='post-user'>by {post.username}</p>
                         <p className='post-content'>{post.content}</p>
                         <div className="button-div">
                         {post.username === username && <button
